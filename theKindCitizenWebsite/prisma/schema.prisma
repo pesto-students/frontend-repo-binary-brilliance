@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Corporate {
+  id           Int           @id(map: "PK__Corporat__3213E83FC4CF618C") @default(autoincrement())
+  orgID        Int?
+  hereAboutUs  String?       @db.Text
+  helpRequired String?       @db.Text
+  Organization Organization? @relation(fields: [orgID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__Corporate__orgID__42E1EEFE")
+}
+
+model EventNGORelationship {
+  id      Int    @id(map: "PK__EventNGO__3213E83F970B4B5C") @default(autoincrement())
+  eventID Int?
+  NGOID   Int?
+  Events  Event? @relation(fields: [eventID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__EventNGOR__event__55009F39")
+  NGO     NGO?   @relation(fields: [NGOID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__EventNGOR__NGOID__55F4C372")
+}
+
+model NGO {
+  id                   Int                    @id(map: "PK__NGO__3213E83F28DDF0FE") @default(autoincrement())
+  orgID                Int?
+  LogoLink             String?                @db.VarChar(2048)
+  InstagramLink        String?                @db.VarChar(2048)
+  EventNGORelationship EventNGORelationship[]
+  Organization         Organization?          @relation(fields: [orgID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__NGO__orgID__40058253")
+  NGOcenter            NGOcenter[]
+}
+
+model NGOcenter {
+  id    Int  @id(map: "PK__NGOcente__3213E83FB80D124B") @default(autoincrement())
+  NGOId Int?
+  NGO   NGO? @relation(fields: [NGOId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__NGOcenter__NGOId__45BE5BA9")
+}
+
+model OrganisationSpoc {
+  id           Int           @id(map: "PK__Organisa__3213E83F138288A8") @default(autoincrement())
+  email        String?       @db.VarChar(255)
+  phone        String?       @db.VarChar(255)
+  number       BigInt?
+  orgID        Int?
+  Organization Organization? @relation(fields: [orgID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__Organisat__orgID__489AC854")
+}
+
+model Organization {
+  id                 Int                @id(map: "PK__Organiza__3213E83FFBA95C19") @default(autoincrement())
+  name               String?            @db.VarChar(255)
+  type               String?            @db.VarChar(255)
+  activityStatus     Boolean?
+  email              String?            @db.VarChar(255)
+  verificationStatus Boolean?
+  phoneNumber        BigInt?
+  latitude           Float?
+  longitude          Float?
+  phoneCode          Int?
+  addressLine1       String?            @db.VarChar(255)
+  addressLine2       String?            @db.VarChar(255)
+  city               String?            @db.VarChar(255)
+  state              String?            @db.VarChar(255)
+  country            String?            @db.VarChar(255)
+  postalCode         String?            @db.VarChar(255)
+  Corporate          Corporate[]
+  NGO                NGO[]
+  OrganisationSpoc   OrganisationSpoc[]
+  User               User[]
+}
+
+model Role {
+  id         Int     @id(map: "PK__Role__3213E83F5803B730") @default(autoincrement())
+  roleName   String? @db.VarChar(255)
+  accessType String? @db.VarChar(255)
+}
+
+model Venue {
+  id                Int                 @id(map: "PK__Venue__3213E83FFF61C40B") @default(autoincrement())
+  eventID           Int
+  latitude          Float?
+  longitude         Float?
+  email             String?             @db.VarChar(255)
+  locationLink      String?             @db.VarChar(Max)
+  capacity          Int?
+  address           String?             @db.NVarChar(Max)
+  availableCapacity Int
+  venueName         String?             @db.VarChar(255)
+  EventParticipant  EventParticipant[]
+  ReadVenueCapacity ReadVenueCapacity[]
+  Events            Event               @relation(fields: [eventID], references: [id], onUpdate: NoAction, map: "FK__Venue__eventID__1E6F845E")
+}
+
+model Cause {
+  id                     Int                      @id(map: "PK__Cause__3213E83F5EE931BA") @default(autoincrement())
+  causeName              String?                  @db.VarChar(255)
+  EventCauseRelationship EventCauseRelationship[]
+}
+
+model EventCauseRelationship {
+  id      Int    @id(map: "PK__EventCau__3213E83FA89874AC") @default(autoincrement())
+  eventID Int?
+  causeID Int?
+  Cause   Cause? @relation(fields: [causeID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__EventCaus__cause__318258D2")
+  Events  Event? @relation(fields: [eventID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__EventCaus__event__308E3499")
+}
+
+model User {
+  id               Int                @id(map: "PK__Users__3213E83F740D59DE") @default(autoincrement())
+  phoneCode        Int?
+  name             String?            @db.VarChar(255)
+  orgID            Int?
+  email            String?            @db.VarChar(255)
+  phoneNumber      String?            @db.VarChar(20)
+  age              Int?
+  gender           String?            @db.VarChar(10)
+  isVerified       Boolean?
+  hasAccount       Boolean?
+  EventParticipant EventParticipant[]
+  Organization     Organization?      @relation(fields: [orgID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__Users__orgID__4B7734FF")
+}
+
+model Event {
+  id                     Int                      @id(map: "PK__Events__3213E83F376931BA") @default(autoincrement())
+  eventName              String?                  @db.VarChar(255)
+  startDate              DateTime?                @db.Date
+  endDate                DateTime?                @db.Date
+  ticketPrice            Decimal?                 @db.Decimal(10, 2)
+  thumbnailLink          String?                  @db.VarChar(255)
+  city                   String?                  @db.VarChar(255)
+  cause                  String?                  @db.VarChar(255)
+  description            String?                  @db.Text
+  startTime              DateTime?                @db.Time
+  endTime                DateTime?                @db.Time
+  EventCauseRelationship EventCauseRelationship[]
+  EventNGORelationship   EventNGORelationship[]
+  EventParticipant       EventParticipant[]
+  Venue                  Venue[]
+}
+
+model EventParticipant {
+  id                    Int       @id(map: "PK__EventPar__3213E83F2D62C99C") @default(autoincrement())
+  eventID               Int?
+  userID                Int?
+  numberOfTicketsBooked Int?
+  paymentStatus         String?   @db.VarChar(50)
+  paymentMethod         String?   @db.VarChar(255)
+  receiptUrl            String?   @db.VarChar(2048)
+  bookingDate           DateTime? @db.Date
+  transactionID         String    @db.VarChar(36)
+  venueID               Int
+  totalAmount           Decimal   @db.Decimal(10, 2)
+  Event                 Event?    @relation(fields: [eventID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__EventPart__event__58D1301D")
+  User                  User?     @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__EventPart__userI__59C55456")
+  Venue                 Venue     @relation(fields: [venueID], references: [id], onUpdate: NoAction, map: "FK_VenueID")
+}
+
+model ReadVenueCapacity {
+  venueId           Int
+  id                Int   @id(map: "PK__ReadVenu__3213E83F7E07B309") @default(autoincrement())
+  availableCapacity Int?
+  bookedCapacity    Int?
+  inProgress        Int?
+  Venue             Venue @relation(fields: [venueId], references: [id], onUpdate: NoAction, map: "FK__ReadVenue__venue__43A1090D")
+}
+
+model ContactUs {
+  id            Int    @id(map: "PK__ContactU__3213E83FECD19D1E") @default(autoincrement())
+  name          String @db.VarChar(255)
+  phoneNo       String @db.VarChar(20)
+  email         String @db.VarChar(255)
+  yourCity      String @db.VarChar(255)
+  askUsAnything String @db.Text
+  persona       String @db.VarChar(20)
+}
