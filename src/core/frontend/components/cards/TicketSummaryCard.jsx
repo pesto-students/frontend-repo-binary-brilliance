@@ -15,7 +15,7 @@ const TicketSummaryCard = ({event = {}, venueID }) => {
             <div className="font-bold mb-4">{`Total Amount ₹${event.ticketPrice * ticketCount}`}</div>
 
             <LongContrastButton
-                isDisabledOnClick={true}
+                // isDisabledOnClick={true}
                 onClick={async () => {
                     alert('We are redirecting you to the Payment page...');
                     const data = await TicketRequests.buyTickets({ event, venueID, ticketCount, bookingUserDetails });

@@ -32,7 +32,9 @@ const EventRequests = {
                     'Expires': '0'
                 },
             });
-            const { event } = response.data;
+            const { event, message, error } = response.data;
+            if (message) console.log(message);
+            else console.log(error);
             return event;
         } catch (error) {
             console.log('Error occurred while fetching events.', error);
