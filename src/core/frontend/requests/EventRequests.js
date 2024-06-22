@@ -25,6 +25,10 @@ const EventRequests = {
     fetchEventByID: async (eventID) => {
         try {
             const baseURL = EnvironmentUtils.getBaseURL();
+            console.log({
+                message: 'hi i am in EventRequest.js page',
+                baseURL,
+            });
             const response = await axios.get(`${baseURL}/api/events/${eventID}`, {
                 headers: {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
