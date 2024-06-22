@@ -175,3 +175,9 @@ model ContactUs {
   askUsAnything String @db.Text
   persona       String @db.VarChar(20)
 }
+
+model MerchantTransaction {
+  id                    Int    @id(map: "PK__Merchant__3213E83F340FC0E1") @default(autoincrement())
+  MerchantTransactionId String @db.VarChar(255)
+  Email                 String @db.VarChar(255)
+}

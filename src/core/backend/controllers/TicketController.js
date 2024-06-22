@@ -2,6 +2,9 @@ import { toInteger } from "lodash";
 import ReadVenueCapacity from "../models/ReadVenueCapacity"
 import PaymentService from "@/core/backend/services/PhonePe/PaymentService";
 import Venue from "../models/Venue";
+import {mockSendEmail} from "@/core/backend/services/Email/EmailService";
+import MerchantTransaction from "@/core/backend/models/MerchantTransaction";
+import emailService from '@/core/backend/services/Email/EmailService';
 
 const TicketController = {
     reserveTicketAndGetRedirectURL: async (bookingInformation) => {
@@ -46,17 +49,17 @@ const TicketController = {
             }
         }
     },
-    updateCapacity: async (venueID, numberOfTicketsReserved, status) => {
+    updateCapacity: async (venueID, numberOfTicketsReserved, status, merchantTransactionID) => {
         if (status === 'PAYMENT_SUCCESS') {
             await Venue.updateCapacity(toInteger(venueID), toInteger(numberOfTicketsReserved));
+            const transaction = await MerchantTransaction.getByMerchantTransactionID(merchantTransactionID);
+            await emailService.sendBookingDetailsEmail(transaction.Email);
             return { status: true, message: "Capacity updated successfully." };
         } else {
             await ReadVenueCapacity.updateTicketCapacityOnRleasingReservation(venueID, toInteger(numberOfTicketsReserved))
             return { status: false, message: "Capacity updated on releasing reservation.+{status}" };
         }
-
     }
-
 };
 
 export default TicketController

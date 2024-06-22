@@ -22,7 +22,7 @@ export const getServerSideProps = async (context) => {
     try {
         const { transactionID, merchantID, venueID, numberOfTicketsToBeReserved } = context.query;
         const paymentResponse = await PaymentRequests.getPaymentStatus(merchantID, transactionID);
-        TicketController.updateCapacity(venueID, numberOfTicketsToBeReserved, paymentResponse.code).then((result) => {
+        TicketController.updateCapacity(venueID, numberOfTicketsToBeReserved, paymentResponse.code, transactionID).then((result) => {
             console.log('Event booked!');
         });
         return {

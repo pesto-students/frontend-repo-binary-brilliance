@@ -7,6 +7,7 @@ import PaymentSecretUtils from "@/core/backend/utils/PaymentSecretUtils";
 import { Buffer } from 'buffer';
 import { redirect } from "next/dist/server/api-utils";
 import {toInteger} from "lodash";
+import MerchantTransaction from '@/core/backend/models/MerchantTransaction';
 
 const PaymentService = {
     initiatePayment: async (bookingInformation) => {
@@ -68,6 +69,7 @@ const PaymentService = {
         try {
             const response = await axios.request(options);
             const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;
+            await MerchantTransaction.saveTransactionInformation(transactionID, email);
             return {
                 merchantUserID,
                 transactionID,
