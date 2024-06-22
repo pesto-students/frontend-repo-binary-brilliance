@@ -18,7 +18,7 @@ const MerchantTransaction = {
 
     getByMerchantTransactionID: async (merchantTransactionID) => {
         try {
-            const transaction = await prisma.merchantTransaction.findFirst({
+            const transaction = await prisma.MerchantTransaction.findFirst({
                 where: {
                     MerchantTransactionId: merchantTransactionID,
                 },
