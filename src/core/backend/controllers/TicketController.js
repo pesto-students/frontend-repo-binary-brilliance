@@ -53,8 +53,8 @@ const TicketController = {
         if (status === 'PAYMENT_SUCCESS') {
             await Venue.updateCapacity(toInteger(venueID), toInteger(numberOfTicketsReserved));
             const transaction = await MerchantTransaction.getByMerchantTransactionID(merchantTransactionID);
-            await emailService.sendBookingDetailsEmail(transaction.Email);
-            return { status: true, message: "Capacity updated successfully." };
+            const { response, error } = await emailService.sendBookingDetailsEmail(transaction.Email);
+            return { status: true, message: "Capacity updated successfully.", emailResponse: { response, error } };
         } else {
             await ReadVenueCapacity.updateTicketCapacityOnRleasingReservation(venueID, toInteger(numberOfTicketsReserved))
             return { status: false, message: "Capacity updated on releasing reservation.+{status}" };

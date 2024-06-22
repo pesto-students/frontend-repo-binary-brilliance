@@ -6,7 +6,10 @@ import SpaceFillerSection from "@/core/frontend/components/sections/SpaceFillerS
 import PaymentFailureSection from "@/core/frontend/components/sections/PaymentFailureSection";
 import TicketController from "@/core/backend/controllers/TicketController";
 
-const StatusPage = ({success}) => {
+const StatusPage = ({success, emailResponse}) => {
+    console.log({
+        emailResponse
+    });
     return (
         <DefaultLayout>
             <Section isGradientCream={true} className='pt-24' horizontalPositionOfChildren={'center'}>
@@ -22,12 +25,11 @@ export const getServerSideProps = async (context) => {
     try {
         const { transactionID, merchantID, venueID, numberOfTicketsToBeReserved } = context.query;
         const paymentResponse = await PaymentRequests.getPaymentStatus(merchantID, transactionID);
-        TicketController.updateCapacity(venueID, numberOfTicketsToBeReserved, paymentResponse.code, transactionID).then((result) => {
-            console.log('Event booked!');
-        });
+        const { emailResponse } = await TicketController.updateCapacity(venueID, numberOfTicketsToBeReserved, paymentResponse.code, transactionID);
         return {
             props: {
-                success: paymentResponse.success
+                success: paymentResponse.success,
+                emailResponse,
             },
         };
     } catch (error) {

@@ -31,8 +31,14 @@ class EmailService {
         try {
             let info = await this.transporter.sendMail(mailOptions);
             console.log('Email sent: ' + info.response);
+            return {
+                response: info.response
+            };
         } catch (error) {
             console.error('Error sending email: ' + error);
+            return {
+                error: error.message
+            };
         }
     }
 }
